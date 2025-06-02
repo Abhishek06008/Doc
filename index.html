@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy Birthday Beautiful ❤️</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .slide {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    .candle {
+      width: 30px;
+      height: 100px;
+      background: black;
+      margin: 20px auto;
+      border-radius: 5px;
+      position: relative;
+      box-shadow: 0 0 15px #222 inset;
+    }
+
+    .flame {
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 40px;
+      background: radial-gradient(ellipse at center, #ff9, #f90 30%, #f00 60%, transparent 85%);
+      border-radius: 50%;
+      filter: drop-shadow(0 0 6px orange);
+      animation: flicker 0.3s infinite alternate;
+      box-shadow: 0 0 15px 5px rgba(255,140,0,0.6), 0 0 30px 10px rgba(255,165,0,0.4);
+      z-index: 10;
+    }
+
+    @keyframes flicker {
+      0% { transform: translateX(-50%) scale(1); filter: drop-shadow(0 0 6px orange); }
+      100% { transform: translateX(-50%) scale(1.2); filter: drop-shadow(0 0 12px #ffae42); }
+    }
+
+    .zoom-emoji {
+      font-size: 4rem;
+      animation: zoom 2s infinite alternate;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    @keyframes zoom {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.3); }
+    }
+
+    .balloon {
+      width: 60px;
+      height: 80px;
+      border-radius: 50% / 60% 60% 40% 40%;
+      margin: 5px;
+      position: relative;
+      animation: float 6s infinite linear;
+      box-shadow: inset -5px -10px 10px rgba(255,255,255,0.4);
+    }
+
+    .balloon::after {
+      content: '';
+      width: 3px;
+      height: 30px;
+      background: black;
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+
+    .balloon::before {
+      content: '';
+      position: absolute;
+      bottom: -37px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 10px;
+      height: 10px;
+      background: black;
+      clip-path: polygon(0% 0%, 100% 0%, 100% 50%, 50% 100%, 0% 50%);
+      z-index: 11;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-100vh); }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Slide 1: Candle -->
+  <div class="slide active" id="slide1" style="background: #fff8dc; color: #333;">
+    <div style="z-index: 10; position: relative;">
+      <div class="candle">
+        <div class="flame"></div>
+      </div>
+      <h1>Happy Birthday Beautiful ❤️</h1>
+    </div>
+  </div>
+
+  <!-- Slide 2: Zooming 💌 -->
+  <div class="slide" id="slide2" style="background: #ffcccc; color: #000;">
+    <div class="zoom-emoji" onclick="nextSlide()">💌</div>
+    <p>Touch it</p>
+  </div>
+
+  <!-- Slide 3: Message -->
+  <div class="slide" id="slide3" style="background: pink; color: black;">
+    <p style="font-size: 20px;">
+      From how I met you at that wedding to having you as my inspiration,<br>
+      as you teach me how to build your own name and work hard to achieve success.<br>
+      Just say: You mean a lot to me ☺️.
+    </p>
+  </div>
+
+  <!-- Slide 4: Thank You -->
+  <div class="slide" id="slide4" style="background: #ffe4e1; color: black;">
+    <h2>Again thank you and have a great life and success ahead</h2>
+  </div>
+
+  <!-- Slide 5: Balloons & Fireworks -->
+  <div class="slide" id="slide5" style="background: #87ceeb; color: black; overflow: hidden;">
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; position: relative; z-index: 10;">
+      <!-- 25 Balloons -->
+      ${Array.from({length: 25}).map((_, i) => `
+        <div class="balloon" style="background-color: hsl(${i * 15}, 80%, 60%); animation-delay: ${i * 0.2}s;"></div>
+      `).join('')}
+    </div>
+    <canvas id="fireworks"></canvas>
+    <h1 style="z-index: 10; position: relative; margin-top: 30px;">
+      Once Again A Happy Birthday Shreya ❤️
+    </h1>
+  </div>
+
+  <script>
+    let current = 1;
+    function nextSlide() {
+      document.getElementById(`slide${current}`).classList.remove('active');
+      current++;
+      const next = document.getElementById(`slide${current}`);
+      if (next) next.classList.add('active');
+    }
+
+    // Auto move from slide 1 to 2 after 6s
+    setTimeout(() => {
+      if(current === 1) nextSlide();
+    }, 6000);
+
+    // Fireworks
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+
+    const fireworks = [];
+
+    class Firework {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.radius = Math.random() * 3 + 2;
+        this.life = 100;
+        this.alpha = 1;
+      }
+
+      update() {
+        this.y -= 1;
+        this.life--;
+        this.alpha -= 0.01;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.color},${this.alpha})`;
+        ctx.fill();
+      }
+    }
+
+    function animateFireworks() {
+      requestAnimationFrame(animateFireworks);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      fireworks.forEach((f, i) => {
+        f.update();
+        f.draw();
+        if (f.life <= 0) fireworks.splice(i, 1);
+      });
+
+      if (Math.random() < 0.3) {
+        for (let i = 0; i < 25; i++) {
+          fireworks.push(new Firework(
+            Math.random() * canvas.width,
+            canvas.height / 2 + Math.random() * 100,
+            `${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)}`
+          ));
+        }
+      }
+    }
+
+    animateFireworks();
+  </script>
+
+</body>
+</html>
